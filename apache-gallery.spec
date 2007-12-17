@@ -32,7 +32,6 @@ BuildRequires:	perl(Image::Size)
 BuildRequires:	perl(Text::Template)
 BuildRequires:	perl(Test::MockObject)
 BuildArch:	    noarch
-BuildRoot:	    %{_tmppath}/%{name}-%{version}
 
 %description
 Apache::Gallery creates an thumbnail index of each directory and
