@@ -25,6 +25,8 @@ BuildRequires:	apache-mod_perl
 %if %{mdkversion} < 1010
 BuildRequires:	perl-devel
 %endif
+# (tv) for testsuite:
+BuildRequires:	perl(CGI)
 BuildRequires:	perl(URI::Escape)
 BuildRequires:	perl(Image::Imlib2)
 BuildRequires:	perl(Image::Info)
