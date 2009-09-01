@@ -2,7 +2,7 @@
 %define module	Apache-Gallery
 %define version	1.0
 %define pre	RC2
-%define release	%mkrel 0.%{pre}.6
+%define release	%mkrel 0.%{pre}.7
 
 Name:		    %{name}
 Version:	    %{version}
