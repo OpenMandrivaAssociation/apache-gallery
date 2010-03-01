@@ -14,17 +14,13 @@ URL:		    http://apachegallery.dk/
 Source0:	    http://apachegallery.dk/download/%{module}-%{version}%{pre}.tar.bz2
 Patch0:		    %{name}-0.9.5.urlbase.patch
 Requires:	    apache-mod_perl
-# webapp macros and scriptlets
-Requires(post):		rpm-helper >= 0.16
-Requires(postun):	rpm-helper >= 0.16
+%if %mdkversion < 201010
+Requires(post):   rpm-helper
+Requires(postun):   rpm-helper
+%endif
 Obsoletes:	    perl-Apache-gallery
 Provides:	    perl-Apache-gallery
-BuildRequires:	rpm-helper >= 0.16
-BuildRequires:	rpm-mandriva-setup >= 1.23
 BuildRequires:	apache-mod_perl
-%if %{mdkversion} < 1010
-BuildRequires:	perl-devel
-%endif
 # (tv) for testsuite:
 BuildRequires:	perl(CGI)
 BuildRequires:	perl(URI::Escape)
@@ -102,10 +98,14 @@ make test
 rm -rf %{buildroot}
 
 %post
+%if %mdkversion < 201010
 %_post_webapp
+%endif
 
 %postun
+%if %mdkversion < 201010
 %_postun_webapp
+%endif
 
 %files
 %defattr(-,root,root)
