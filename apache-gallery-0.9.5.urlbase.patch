@@ -1,0 +1,107 @@
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/lib/Apache/Gallery.pm Apache-Gallery-1.0RC2-urlbase//lib/Apache/Gallery.pm
+--- Apache-Gallery-1.0RC2/lib/Apache/Gallery.pm	2005-06-01 09:17:36.000000000 +0200
++++ Apache-Gallery-1.0RC2-urlbase//lib/Apache/Gallery.pm	2011-02-19 20:33:26.000000000 +0100
+@@ -113,9 +113,11 @@
+ 	
+ 	# Selectmode providing checkboxes beside all thumbnails
+ 	my $select_mode = $cgi->param('select');
++
++	my $url_base = $r->dir_config('GalleryURLBase');
+ 	
+ 	# Let Apache serve icons without us modifying the request
+-	if ($r->uri =~ m/^\/icons/i) {
++	if ($r->uri =~ m/^$url_base/) {
+ 		return $::MP2 ? Apache2::Const::DECLINED() : Apache::Constants::DECLINED();
+ 	}
+ 	# Lookup the file in the cache and scale the image if the cached
+@@ -206,6 +208,7 @@
+ 
+ 		$tpl_vars{TITLE} = "Index of: $uri";
+ 		$tpl_vars{META} = " ";
++		$tpl_vars{URL_BASE} = $url_base;
+ 
+ 		unless (opendir (DIR, $filename)) {
+ 			show_error ($r, 500, $!, "Unable to access directory $filename: $!");
+@@ -337,7 +340,9 @@
+ 					$dirtitle =~ s/_/ /g if $r->dir_config('GalleryUnderscoresToSpaces');
+ 
+ 					$tpl_vars{FILES} .=
+-					     $templates{directory}->fill_in(HASH=> {FILEURL => uri_escape($fileurl, $escape_rule),
++					     $templates{directory}->fill_in(HASH=> {
++										    %tpl_vars,
++										    FILEURL => uri_escape($fileurl, $escape_rule),
+ 										    FILE    => $dirtitle,
+ 										   }
+ 									   );
+@@ -533,6 +538,7 @@
+ 		$tpl_vars{MENU} = generate_menu($r);
+ 		$tpl_vars{SRC} = uri_escape(".cache/$cached", $escape_rule);
+ 		$tpl_vars{URI} = $r->uri();
++		$tpl_vars{URL_BASE} = $url_base;
+ 	
+ 		my $exif_mode = $r->dir_config('GalleryEXIFMode');
+ 		unless ($exif_mode) {
+@@ -1521,6 +1527,15 @@
+ 
+ No default value, this option is required.
+ 
++=item B<GalleryURLBase>
++
++Base URL for all static files (icons, stylesheets, etc...) served by apache
++directly. This option can be used both in your global configuration and in
++.htaccess files, this way you can have different layouts in different parts of
++your gallery.
++
++No default value, this option is required.
++
+ =item B<GalleryInfo>
+ 
+ With this option you can define which EXIF information you would like
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/templates/default/directory.tpl Apache-Gallery-1.0RC2-urlbase//templates/default/directory.tpl
+--- Apache-Gallery-1.0RC2/templates/default/directory.tpl	2004-01-02 13:45:06.000000000 +0100
++++ Apache-Gallery-1.0RC2-urlbase//templates/default/directory.tpl	2011-02-19 20:26:42.000000000 +0100
+@@ -1 +1 @@
+-    <div id="folder"><a href="{ $FILEURL }/"><img border="0" src="/icons/gallery/agfolder.png"><br>{ $FILE }</a></div>
++    <div id="folder"><a href="{ $FILEURL }/"><img border="0" src="{ $URL_BASE }agfolder.png"><br>{ $FILE }</a></div>
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/templates/default/file.tpl Apache-Gallery-1.0RC2-urlbase//templates/default/file.tpl
+--- Apache-Gallery-1.0RC2/templates/default/file.tpl	2004-01-02 14:18:12.000000000 +0100
++++ Apache-Gallery-1.0RC2-urlbase//templates/default/file.tpl	2011-02-19 20:26:42.000000000 +0100
+@@ -1 +1 @@
+-    <div id="folder"><a href="{ $FILEURL }"><img border="0" alt="{ $ALT }" src="/icons/gallery/{ $FILETYPE }.png"><br>{ $FILE }</a></div>
++    <div id="folder"><a href="{ $FILEURL }"><img border="0" alt="{ $ALT }" src="{ $URL_BASE }{ $FILETYPE }.png"><br>{ $FILE }</a></div>
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/templates/default/layout.tpl Apache-Gallery-1.0RC2-urlbase//templates/default/layout.tpl
+--- Apache-Gallery-1.0RC2/templates/default/layout.tpl	2004-01-02 13:45:06.000000000 +0100
++++ Apache-Gallery-1.0RC2-urlbase//templates/default/layout.tpl	2011-02-19 20:26:42.000000000 +0100
+@@ -4,7 +4,7 @@
+ <html>
+ <head>
+ 	<title>{ $TITLE }</title>
+-	<link rel="stylesheet" href="/gallery.css">
++	<link rel="stylesheet" href="{ $URL_BASE }/default.css">
+ 	{ $META }
+ </head>
+ 
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/templates/new/directory.tpl Apache-Gallery-1.0RC2-urlbase//templates/new/directory.tpl
+--- Apache-Gallery-1.0RC2/templates/new/directory.tpl	2004-01-02 13:45:06.000000000 +0100
++++ Apache-Gallery-1.0RC2-urlbase//templates/new/directory.tpl	2011-02-19 20:26:42.000000000 +0100
+@@ -1 +1 @@
+-	<div class="folder"><a href="{ $FILEURL }/"><img src="/icons/gallery/agfolder.png" alt="* { $FILE }"><br>{ $FILE }</a></div>
++	<div class="folder"><a href="{ $FILEURL }/"><img src="{ $URL_BASE }agfolder.png" alt="* { $FILE }"><br>{ $FILE }</a></div>
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/templates/new/file.tpl Apache-Gallery-1.0RC2-urlbase//templates/new/file.tpl
+--- Apache-Gallery-1.0RC2/templates/new/file.tpl	2004-01-02 14:18:12.000000000 +0100
++++ Apache-Gallery-1.0RC2-urlbase//templates/new/file.tpl	2011-02-19 20:26:42.000000000 +0100
+@@ -1 +1 @@
+-    <div class="folder"><a href="{ $FILEURL }"><img border="0" alt="{ $ALT }" src="/icons/gallery/{ $FILETYPE }.png "><br>{ $FILE }</a></div>
++    <div class="folder"><a href="{ $FILEURL }"><img border="0" alt="{ $ALT }" src="{ $URL_BASE }{ $FILETYPE }.png "><br>{ $FILE }</a></div>
+diff -Naur -x '*~' -x '*.orig' Apache-Gallery-1.0RC2/templates/new/layout.tpl Apache-Gallery-1.0RC2-urlbase//templates/new/layout.tpl
+--- Apache-Gallery-1.0RC2/templates/new/layout.tpl	2004-01-02 13:45:06.000000000 +0100
++++ Apache-Gallery-1.0RC2-urlbase//templates/new/layout.tpl	2011-02-19 20:26:42.000000000 +0100
+@@ -4,7 +4,7 @@
+ <html>
+ <head>
+ 	<title>{ $TITLE }</title>
+-	<link rel="stylesheet" href="/gallery.css">
++	<link rel="stylesheet" href="{ $URL_BASE }/new.css">
+ 	{ $META }
+ </head>
+ 
