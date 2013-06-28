@@ -69,7 +69,7 @@ Alias /apache-gallery /var/www/apache-gallery/photos
     PerlOptions +GlobalRequest
 
     <Directory /var/www/apache-gallery>
-        Allow from all
+        Require all granted
     </Directory>
 
     <Directory /var/www/apache-gallery/photos>
@@ -78,7 +78,7 @@ Alias /apache-gallery /var/www/apache-gallery/photos
     </Directory>
 
     <Directory /var/cache/apache-gallery>
-        Allow from all
+        Require all granted
     </Directory>
 </ifModule>
 EOF
