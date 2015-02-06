@@ -2,7 +2,7 @@
 
 Name:		    apache-gallery
 Version:	    1.0.2
-Release:	    2
+Release:	    3
 Summary:	    A mod_perl handler to create an image gallery
 License:	    GPL or Artistic
 Group:		    Networking/WWW
