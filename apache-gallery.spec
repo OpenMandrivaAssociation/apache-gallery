@@ -6,7 +6,7 @@ Release:	    3
 Summary:	    A mod_perl handler to create an image gallery
 License:	    GPL or Artistic
 Group:		    Networking/WWW
-URL:		    http://apachegallery.dk/
+URL:		    https://apachegallery.dk/
 Source0:	    http://apachegallery.dk/download/%{module}-%{version}.tar.gz
 Patch0:		    %{name}-0.9.5.urlbase.patch
 Requires:	    apache-mod_perl
