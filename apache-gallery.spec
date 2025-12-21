@@ -12,6 +12,7 @@ Patch0:		    %{name}-0.9.5.urlbase.patch
 Requires:	    apache-mod_perl
 Obsoletes:	    perl-Apache-gallery
 Provides:	    perl-Apache-gallery
+BuildRequires:	make
 BuildRequires:	apache-mod_perl
 # (tv) for testsuite:
 BuildRequires:	perl(CGI)
